@@ -39,10 +39,20 @@ func CompressList(files *[]fs.DirEntry, input string, output string, wg *sync.Wa
 	}
 }
 
-func SendGoroutines(qtd_files int, files *[]fs.DirEntry, input string, output string) {
+// Check if the number of files is greater than the number of goroutines.
+func CheckGoroutines(goroutines_qtd int, qtd_files int) int {
+	if qtd_files < goroutines_qtd {
+		new_qtd := qtd_files
+		logger.Println("| Unable to use", goroutines_qtd, "goroutines. The number has been reduced to", new_qtd)
+		return new_qtd
+	} 
+	return goroutines_qtd
+}
+
+func SendGoroutines(goroutines_qtd int, qtd_files int, files *[]fs.DirEntry, input string, output string) {
 	var wg sync.WaitGroup
 
-	goroutines_qtd := 5
+	goroutines_qtd = CheckGoroutines(goroutines_qtd, qtd_files)
 	quotient := qtd_files / goroutines_qtd
 	start := 0
 	count := quotient
@@ -73,13 +83,12 @@ func DirSizeGB(path string) int64 {
         if !file.IsDir() {
             dir_size += file.Size()
         }
-
         return nil
     }
 
     filepath.Walk(path, read_size)    
 
-    size_mb := dir_size / 1024 / 1024 / 1024
+    size_mb := dir_size / 1024 / 1024
 
     return size_mb
 }
@@ -89,20 +98,22 @@ func main() {
 	var output_path string
 	flag.StringVar(&input_path, "input", "", "input directory")
 	flag.StringVar(&output_path, "output", "", "output directory")
+	
 	flag.Parse()
-
+	
+	goroutines_qtd := 5 
 	files, err := os.ReadDir(input_path)
 	qtd_files := len(files)
-	size_gb := DirSizeGB(input_path)
+	size_mb := DirSizeGB(input_path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	logger.Println("| Number of Goroutines: 5")
+	logger.Println("| Number of goroutines:", goroutines_qtd)
 	logger.Println("| Starting to compress folder", input_path)
-	logger.Println("| Files quantity:", qtd_files)
-	logger.Println("| Size GB:", size_gb, output_path)
+	logger.Println("| Number of files:", qtd_files)
+	logger.Println("| Size MB:", size_mb, output_path)
 
-	SendGoroutines(qtd_files, &files, input_path, output_path)
+	SendGoroutines(goroutines_qtd, qtd_files, &files, input_path, output_path)
 	logger.Println("| Done.")
 }
