@@ -1,5 +1,7 @@
 A program to compress a folder with multiple videos concurrently
 
+**You must install FFmpeg for it to work**
+
 ## How to use
 
 Clone the project
