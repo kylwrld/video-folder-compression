@@ -19,7 +19,7 @@ Enter the directory
 Run
 
 ```bash
-  ./main.exe -input <input_path> -output <output_path>
+  ./main.go -input <input_path> -output <output_path>
 ```
 
 This will take all files in input_path and compress them to output_path, 5 files at a time
