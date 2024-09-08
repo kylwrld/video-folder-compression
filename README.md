@@ -25,7 +25,3 @@ Run
 This will take all files in input_path and compress them to output_path, 5 files at a time
 
 ![example](https://github.com/kylwrld/video-folder-compression/blob/master/images/example.png?raw=true)
-
-# Releases
-
-https://github.com/kylwrld/video-folder-compression/releases
